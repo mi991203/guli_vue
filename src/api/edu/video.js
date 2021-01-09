@@ -13,8 +13,25 @@ export default {
   //删除小节
   deleteVideo(id) {
     return request({
-      url: '/edu-service/edu-video/'+id,
+      url: '/edu-service/edu-video/delete'+id,
       method: 'delete'
     })
   },
+
+  // 根据小节ID查询小节
+  queryVideoById(id) {
+    return request({
+      url: '/edu-service/edu-video/queryVideoById/'+id,
+      method: 'get'
+    })
+  },
+
+  // 根据videoId对表进行更新
+  updateVideoById(eduVideo) {
+    return request({
+      url: '/edu-service/edu-video/updateVideoById',
+      method: 'post',
+      data: eduVideo
+    })
+  }
 }

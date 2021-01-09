@@ -68,9 +68,9 @@
           <el-input-number v-model="video.sort" :min="0" controls-position="right"/>
         </el-form-item>
         <el-form-item label="是否免费">
-          <el-radio-group v-model="video.free">
+          <el-radio-group v-model="video.isFree">
             <el-radio :label="true">免费</el-radio>
-            <el-radio :label="false">默认</el-radio>
+            <el-radio :label="false">收费</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="上传视频">
@@ -79,7 +79,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVideoFormVisible = false">取 消</el-button>
-        <el-button :disabled="saveVideoBtnDisabled" type="primary" @click="addVideo">确 定</el-button>
+        <el-button type="primary" @click="saveOrUpdateVideo">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -108,7 +108,7 @@ export default {
       video: {
         title: '',
         sort: 0,
-        free: 0,
+        isFree: 0,
         videoSourceId: ''
       }
     }
@@ -126,6 +126,12 @@ export default {
     openAddVideo(chapterId) {
       // 打开小节弹框
       this.dialogVideoFormVisible = true
+      this.video = {
+        title: '',
+        sort: 0,
+        isFree: 0,
+        videoSourceId: ''
+      }
       // 设置章节ID
       this.video.chapterId = chapterId
     },
@@ -133,7 +139,7 @@ export default {
     addVideo() {
       // 设置课程ID
       this.video.courseId = this.courseId
-      video.addVideo(this.video).then(response=>{
+      video.addVideo(this.video).then(response => {
         this.$message({
           type: 'success',
           message: '添加小节成功'
@@ -142,7 +148,38 @@ export default {
         this.getChapterVideo()
       })
     },
+    // 修改小节
+    editVideo() {
+      video.updateVideoById(this.video).then(result => {
+        this.$message({
+          type: 'success',
+          message: '更新小节成功'
+        })
+        this.dialogVideoFormVisible = false
+        this.getChapterVideo()
+      })
+    },
+    // 修改或删除（在小节的编辑页面或者小节的添加页面点击确定后触发）
+    saveOrUpdateVideo() {
+      if (this.video.id) {
+        // 修改
+        this.editVideo()
+      } else {
+        // 添加
+        this.addVideo()
+      }
+    },
+    // 打开编辑小节弹窗
+    openEditVideo(videoId) {
+      // 根据VideoId进行查询
+      this.dialogVideoFormVisible = true
+      video.queryVideoById(videoId).then(response => {
+        this.video = response.data.video
+      })
+    },
+    deleteVideo(videoId) {
 
+    },
     //============章节操作==============
     // 根据章节Id删除
     deleteChapter(chapterId) {
