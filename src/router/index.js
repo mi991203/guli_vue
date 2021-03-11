@@ -77,13 +77,13 @@ export const constantRouterMap = [
         path: 'list',
         name: '课程分类列表',
         component: () => import('@/views/edu/subject/list'),
-        meta: { title: '讲师列表', icon: 'table' }
+        meta: { title: '课程分类列表', icon: 'table' }
       },
       {
         path: 'save',
         name: '添加课程分类',
         component: () => import('@/views/edu/subject/save'),
-        meta: { title: '添加讲师', icon: 'tree' }
+        meta: { title: '添加课程分类', icon: 'tree' }
       }
     ]
   },
@@ -131,7 +131,28 @@ export const constantRouterMap = [
       }
     ]
   },
-
+  // 数据统计
+  {
+    path: '/sta',
+    component: Layout,
+    redirect: '/sta/create',
+    name: 'Statistics',
+    meta: { title: '统计分析', icon: 'example' },
+    children: [
+      {
+        path: 'create',
+        name: 'StatisticsDailyCreate',
+        component: () => import('@/views/sta/create'),
+        meta: { title: '生成统计', icon: 'table'}
+      },
+      {
+        path: 'show',
+        name: '图表显示',
+        component: () => import('@/views/sta/show'),
+        meta: { title: '图表显示', icon: 'tree' }
+      }
+    ]
+  },
   {
     path: '/example',
     component: Layout,

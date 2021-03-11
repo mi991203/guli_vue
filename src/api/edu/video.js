@@ -33,5 +33,13 @@ export default {
       method: 'post',
       data: eduVideo
     })
+  },
+
+  // 根据视频id来删除阿里云的视频资源
+  deleteAlyVod(id) {
+    return request({
+      url: '/edu-vod/video/remove-aly-video/'+id,
+      method: 'delete'
+    })
   }
 }

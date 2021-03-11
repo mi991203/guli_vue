@@ -74,7 +74,25 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="上传视频">
-          <!-- TODO -->
+          <el-upload
+            :on-success="handleVodUploadSuccess"
+            :on-remove="handleVodRemove"
+            :before-remove="beforeVodRemove"
+            :on-exceed="handleUploadExceed"
+            :file-list="fileList"
+            :action="BASE_API+'/edu-vod/video/upload-aly-video'"
+            :limit="1"
+            class="upload-demo">
+            <el-button size="small" type="primary">上传视频</el-button>
+            <el-tooltip placement="right-end">
+              <div slot="content">最大支持1G，<br>
+                支持3GP、ASF、AVI、DAT、DV、FLV、F4V、<br>
+                GIF、M2T、M4V、MJ2、MJPEG、MKV、MOV、MP4、<br>
+                MPE、MPG、MPEG、MTS、OGG、QT、RM、RMVB、<br>
+                SWF、TS、VOB、WMV、WEBM 等视频格式上传</div>
+              <i class="el-icon-question"/>
+            </el-tooltip>
+          </el-upload>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -109,8 +127,11 @@ export default {
         title: '',
         sort: 0,
         isFree: 0,
-        videoSourceId: ''
-      }
+        videoSourceId: '',
+        videoOriginalName:''//视频名称
+      },
+      BASE_API: process.env.BASE_API, // 接口地址
+      fileList: [] // 上传文件列表
     }
   },
   created() {
@@ -122,6 +143,41 @@ export default {
     }
   },
   methods: {
+    //============上传视频对应的方法=======
+    //上传视频成功调用的方法
+    handleVodUploadSuccess(response, file, fileList) {
+      //上传视频id赋值
+      this.video.videoSourceId = response.data.videoId
+      //上传视频名称赋值
+      this.video.videoOriginalName = file.name
+    },
+    // 上传完成后点击取消的调用方法
+    beforeVodRemove(file,fileList) {
+      return this.$confirm(`确定移除 ${ file.name }？`);
+    },
+    // 弹窗现实点击确定后触发的方法
+    handleVodRemove() {
+      //调用接口的删除视频的方法
+      video.deleteAlyVod(this.video.videoSourceId)
+        .then(response => {
+          //提示信息
+          this.$message({
+            type: 'success',
+            message: '删除视频成功!'
+          });
+          //把文件列表清空
+          this.fileList = []
+          //把video视频id和视频名称值清空
+          //上传视频id赋值
+          this.video.videoSourceId = ''
+          //上传视频名称赋值
+          this.video.videoOriginalName = ''
+        })
+    },
+    // 一次上传多个视频时触发的方法
+    handleUploadExceed() {
+      this.$message.warning('想要重新上传视频，请先删除已上传的视频')
+    },
     //============小节操作===============
     openAddVideo(chapterId) {
       // 打开小节弹框
@@ -147,6 +203,7 @@ export default {
         this.dialogVideoFormVisible = false
         this.getChapterVideo()
       })
+      this.fileList = []
     },
     // 修改小节
     editVideo() {
@@ -269,7 +326,7 @@ export default {
     },
     next() {
       console.log('next')
-      this.$router.push({ path: '/course/publish/1' })
+      this.$router.push({ path: '/course/publish/'+this.courseId })
     }
   }
 }
